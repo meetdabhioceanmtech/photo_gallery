@@ -17,7 +17,7 @@ class ThumbnailProvider extends ImageProvider<ThumbnailProvider> {
   final bool? highQuality;
 
   @override
-  ImageStreamCompleter load(key, decode) {
+  ImageStreamCompleter loadImage(key, decode) {
     return MultiFrameImageStreamCompleter(
       codec: _loadAsync(key, decode),
       scale: 1.0,
@@ -27,17 +27,32 @@ class ThumbnailProvider extends ImageProvider<ThumbnailProvider> {
     );
   }
 
-  Future<ui.Codec> _loadAsync(
-      ThumbnailProvider key, DecoderCallback decode) async {
+  Future<ui.Codec> _loadAsync(ThumbnailProvider key, ImageDecoderCallback decode) async {
     assert(key == this);
-    final bytes = await PhotoGallery.getThumbnail(
-      mediumId: mediumId,
-      mediumType: mediumType,
-      height: height,
-      width: width,
-      highQuality: highQuality,
-    );
-    return await decode(Uint8List.fromList(bytes));
+    late ui.ImmutableBuffer buffer;
+    try {
+      final data = await PhotoGallery.getThumbnail(
+        mediumId: mediumId,
+        mediumType: mediumType,
+        height: height,
+        width: width,
+        highQuality: highQuality,
+      );
+      buffer = await ui.ImmutableBuffer.fromUint8List(Uint8List.fromList(data));
+    } catch (e) {
+      buffer = await ui.ImmutableBuffer.fromAsset("packages/photo_gallery/images/grey.bmp");
+    }
+    return decode(buffer);
+
+    // assert(key == this);
+    // final bytes = await PhotoGallery.getThumbnail(
+    //   mediumId: mediumId,
+    //   mediumType: mediumType,
+    //   height: height,
+    //   width: width,
+    //   highQuality: highQuality,
+    // );
+    // return await decode(Uint8List.fromList(bytes));
   }
 
   @override

@@ -11,7 +11,7 @@ class PhotoProvider extends ImageProvider<PhotoProvider> {
   final String? mimeType;
 
   @override
-  ImageStreamCompleter load(key, decode) {
+  ImageStreamCompleter loadImage(key, decode) {
     return MultiFrameImageStreamCompleter(
       codec: _loadAsync(key, decode),
       scale: 1.0,
@@ -21,14 +21,18 @@ class PhotoProvider extends ImageProvider<PhotoProvider> {
     );
   }
 
-  Future<ui.Codec> _loadAsync(PhotoProvider key, DecoderCallback decode) async {
+  Future<ui.Codec> _loadAsync(PhotoProvider key, ImageDecoderCallback decode) async {
     assert(key == this);
-    final file = await PhotoGallery.getFile(
-        mediumId: mediumId, mediumType: MediumType.image, mimeType: mimeType);
 
-    final bytes = await file.readAsBytes();
+    final file = await PhotoGallery.getFile(mediumId: mediumId, mediumType: MediumType.image, mimeType: mimeType);
+    ui.ImmutableBuffer buffer = await ui.ImmutableBuffer.fromFilePath(file.path);
+    return decode(buffer);
 
-    return await decode(bytes);
+    // final file = await PhotoGallery.getFile(mediumId: mediumId, mediumType: MediumType.image, mimeType: mimeType);
+
+    // final bytes = await file.readAsBytes();
+
+    // return await decode(bytes);
   }
 
   @override
