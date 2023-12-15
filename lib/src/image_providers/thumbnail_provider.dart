@@ -43,16 +43,6 @@ class ThumbnailProvider extends ImageProvider<ThumbnailProvider> {
       buffer = await ui.ImmutableBuffer.fromAsset("packages/photo_gallery/images/grey.bmp");
     }
     return decode(buffer);
-
-    // assert(key == this);
-    // final bytes = await PhotoGallery.getThumbnail(
-    //   mediumId: mediumId,
-    //   mediumType: mediumType,
-    //   height: height,
-    //   width: width,
-    //   highQuality: highQuality,
-    // );
-    // return await decode(Uint8List.fromList(bytes));
   }
 
   @override
